@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Management System</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="head">
+      <h1>🎓 Student Management System</h1>
+      <button id="addstudent">+ Add Student</button>
+    </div>
+
+    <div id="loadingBox" class="loading-box" style="display: none"></div>
+
+    <div
+      id="toastContainer"
+      class="toast-container"
+      role="status"
+      aria-live="polite"
+    ></div>
+
+    <main class="container">
+      <div class="dashboard">
+        <div class="card card-1">
+          <h3>Total Students</h3>
+          <span id="totalstudents">0</span>
+        </div>
+        <div class="card card-2">
+          <h3>Passed Students</h3>
+          <span id="passedstudents">0</span>
+        </div>
+        <div class="card card-3">
+          <h3>Failed Students</h3>
+          <span id="failedstudents">0</span>
+        </div>
+        <div class="card card-4">
+          <h3>Average Percentage</h3>
+          <span id="averageper">0</span>
+        </div>
+        <div class="card card-5">
+          <h3>Highest Percentage</h3>
+          <span id="highestper">0</span>
+        </div>
+        <div class="card card-1">
+          <h3>Lowest Percentage</h3>
+          <span id="lowestper">0</span>
+        </div>
+      </div>
+      <p id="dashboardNote" class="dashboard-note" hidden>
+        Please add students to view the dashboard.
+      </p>
+
+      <section class="card-6 toolbar">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="🔍 Search by name or roll number..."
+        />
+
+        <div class="toolbar-controls">
+          <label for="filterSelect">Result:</label>
+          <select id="filterSelect">
+            <option value="all">All</option>
+            <option value="pass">Pass</option>
+            <option value="fail">Fail</option>
+          </select>
+
+          <label for="gradeSelect">Grade:</label>
+          <select id="gradeSelect">
+            <option value="all">All</option>
+            <option value="a">Grade A</option>
+            <option value="b">Grade B</option>
+            <option value="c">Grade C</option>
+            <option value="f">Grade F</option>
+          </select>
+
+          <label for="sortSelect">Sort:</label>
+          <select id="sortSelect">
+            <option value="name-asc">Name (A-Z)</option>
+            <option value="name-desc">Name (Z-A)</option>
+            <option value="highestper">Percentage (High-Low)</option>
+            <option value="lowestper">Percentage (Low-High)</option>
+            <option value="highestmar">Total (High-Low)</option>
+            <option value="lowestmar">Total (Low-High)</option>
+            <option value="roll-asc">Roll No (Asc)</option>
+            <option value="roll-desc">Roll No (Desc)</option>
+          </select>
+
+          <label for="rowsSelect">Per page:</label>
+          <select id="rowsSelect">
+            <option value="5">5</option>
+            <option value="10">10</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="card-7 table-card">
+        <div class="status-bar">
+          <button id="refreshBtn" class="refresh-btn">↻ Refresh</button>
+          <span id="lastUpdated" class="last-updated">Last updated: —</span>
+        </div>
+
+        <table id="studentTable" style="display: none">
+          <thead>
+            <tr>
+              <th>S.No</th>
+              <th>Name</th>
+              <th>Roll Number</th>
+              <th>HTML</th>
+              <th>CSS</th>
+              <th>JavaScript</th>
+              <th>Total</th>
+              <th>Percentage</th>
+              <th>Grade</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="studentTableBody"></tbody>
+        </table>
+
+        <p id="countInfo" class="count-info"></p>
+
+        <div id="errorState" class="empty-state" style="display: none">
+          <div class="empty-icon">⚠️</div>
+          <h3 id="errorMessage">Unable to load student data.</h3>
+          <button id="retryBtn" class="retry-btn">Retry</button>
+        </div>
+
+        <div id="emptyState" class="empty-state" style="display: none">
+          <div class="empty-icon">🔍</div>
+          <h3 id="emptyMessage">No students available.</h3>
+          <p id="emptySub"></p>
+        </div>
+
+        <div id="pagination" class="pagination"></div>
+      </section>
+
+      <form id="resultForm" novalidate onsubmit="return false;">
+        <span id="closebtn">&times;</span>
+        <h2 id="modalTitle">Add Student</h2>
+
+        <div class="form-group">
+          <label for="studentName">Student Name</label>
+          <input
+            type="text"
+            id="studentName"
+            placeholder="Enter student name"
+          />
+          <span class="error" id="err-name"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="rollNo">Roll No</label>
+          <input type="text" id="rollNo" placeholder="e.g. CS101" />
+          <span class="error" id="err-roll"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="htmlMarks">HTML Marks (0-100)</label>
+          <input type="text" id="htmlMarks" placeholder="Enter HTML marks" />
+          <span class="error" id="err-html"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="cssMarks">CSS Marks (0-100)</label>
+          <input type="text" id="cssMarks" placeholder="Enter CSS marks" />
+          <span class="error" id="err-css"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="jsMarks">JavaScript Marks (0-100)</label>
+          <input
+            type="text"
+            id="jsMarks"
+            placeholder="Enter JavaScript marks"
+          />
+          <span class="error" id="err-js"></span>
+        </div>
+
+        <div id="resultPreview" class="preview">
+          Enter valid marks to see Total, Percentage, Grade and Result.
+        </div>
+
+        <div class="form-actions">
+          <button type="button" id="resetFormBtn">Reset</button>
+          <button type="submit" id="saveStudentBtn">Add Student</button>
+        </div>
+      </form>
+
+      <div id="viewModal" class="modal">
+        <div class="modal-content">
+          <span id="closeViewBtn">&times;</span>
+          <h2 id="viewTitle">Student Details</h2>
+
+          <div class="form-group">
+            <label for="viewName">Name</label>
+            <input type="text" id="viewName" readonly />
+            <span class="error" id="view-err-name"></span>
+          </div>
+          <div class="form-group">
+            <label for="viewRoll">Roll No</label>
+            <input type="text" id="viewRoll" readonly />
+            <span class="error" id="view-err-roll"></span>
+          </div>
+          <div class="form-group">
+            <label for="viewHtml">HTML</label>
+            <input type="text" id="viewHtml" readonly />
+            <span class="error" id="view-err-html"></span>
+          </div>
+          <div class="form-group">
+            <label for="viewCss">CSS</label>
+            <input type="text" id="viewCss" readonly />
+            <span class="error" id="view-err-css"></span>
+          </div>
+          <div class="form-group">
+            <label for="viewJs">JavaScript</label>
+            <input type="text" id="viewJs" readonly />
+            <span class="error" id="view-err-js"></span>
+          </div>
+          <div class="form-group">
+            <label for="viewTotal">Total</label>
+            <input type="text" id="viewTotal" readonly />
+          </div>
+          <div class="form-group">
+            <label for="viewPercentage">Percentage</label>
+            <input type="text" id="viewPercentage" readonly />
+          </div>
+          <div class="form-group">
+            <label for="viewGrade">Grade</label>
+            <input type="text" id="viewGrade" readonly />
+          </div>
+          <div class="form-group">
+            <label for="viewStatus">Result</label>
+            <input type="text" id="viewStatus" readonly />
+          </div>
+
+          <div class="action-buttons">
+            <button id="editBtn">Edit</button>
+            <button id="saveChangesBtn" style="display: none">
+              Update Student
+            </button>
+            <button id="deleteBtn">Delete</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="confirmModal" class="modal">
+        <div class="modal-content confirm-box">
+          <h2 id="confirmTitle">Are you sure?</h2>
+          <p id="confirmText"></p>
+          <div class="action-buttons">
+            <button id="confirmNoBtn">Cancel</button>
+            <button id="confirmYesBtn">Confirm</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

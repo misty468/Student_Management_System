@@ -5,7 +5,7 @@ const USES_SAME_SERVER =
   !["localhost", "127.0.0.1", ""].includes(location.hostname);
 const API_URL = USES_SAME_SERVER
   ? "/students"
-  : "http://localhost:3001/students";
+  : "https://student-management-system-fhcp.onrender.com/students";
 const PREFS_KEY = "studentPrefs_v1";
 const CACHE_KEY = "studentCache_v1";
 const PASS_MARK = 35;
